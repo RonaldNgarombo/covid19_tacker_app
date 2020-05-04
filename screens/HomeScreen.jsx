@@ -5,8 +5,7 @@ import {
 	View,
 	Button,
 	FlatList,
-	ScrollView,
-	SafeAreaView,
+	ActivityIndicator,
 } from 'react-native';
 
 import axios from 'axios';
@@ -16,7 +15,13 @@ import CountryCard from '../components/CountryCard';
 // https://covid19api.com/
 // https://documenter.getpostman.com/view/10808728/SzS8rjbc?version=latest
 const HomeScreen = ({ navigation }) => {
-	const [covidData, setCovidData] = useState({
+	const [covidData, setCovidData] = useState([]);
+
+	useEffect(() => {
+		getData();
+	}, []);
+
+	const DATA = {
 		Global: {
 			NewConfirmed: 82251,
 			TotalConfirmed: 3230493,
@@ -76,11 +81,7 @@ const HomeScreen = ({ navigation }) => {
 				Date: '2020-04-05T06:37:00Z',
 			},
 		],
-	});
-
-	useEffect(() => {
-		// getData();
-	}, []);
+	};
 
 	// Get a Summary of Covid Data
 	const getData = async () => {
@@ -89,7 +90,7 @@ const HomeScreen = ({ navigation }) => {
 				`https://api.covid19api.com/summary`
 			);
 
-			console.log(response.data);
+			setCovidData(response.data);
 		} catch (error) {
 			console.log(error);
 		}
@@ -98,75 +99,95 @@ const HomeScreen = ({ navigation }) => {
 	console.log(`
 	`);
 
-	// NewConfirmed
-	// TotalConfirmed:
-	// NewDeaths:
-	// TotalDeaths:
-	// NewRecovered:
-	// TotalRecovered:
-
-	const {
-		NewConfirmed,
-		TotalConfirmed,
-		NewDeaths,
-		TotalDeaths,
-		NewRecovered,
-		TotalRecovered,
-	} = covidData.Global;
+	// const {
+	// 	NewConfirmed,
+	// 	TotalConfirmed,
+	// 	NewDeaths,
+	// 	TotalDeaths,
+	// 	NewRecovered,
+	// 	TotalRecovered,
+	// } = covidData.Global;
 
 	return (
-		<ScrollView>
-			<View style={styles.container}>
-				<View style={styles.summary}>
-					<View style={{ flex: 1 }}>
-						<Text style={styles.summaryText}>New Confirmed</Text>
-
-						<Text style={styles.summaryText}>Total Confirmed </Text>
-
-						<Text style={styles.summaryText}>New Deaths </Text>
-						<Text style={styles.summaryText}>Total Deaths</Text>
-						<Text style={styles.summaryText}>New Recovered</Text>
-						<Text style={styles.summaryText}>Total Recovered </Text>
-					</View>
-
-					<View style={{ flex: 1 }}>
-						<Text style={styles.summaryText}>
-							{NewConfirmed ? NewConfirmed : ''}
-						</Text>
-
-						<Text style={styles.summaryText}>
-							{TotalConfirmed ? TotalConfirmed : ''}
-						</Text>
-
-						<Text style={styles.summaryText}>
-							{NewDeaths ? NewDeaths : ''}
-						</Text>
-
-						<Text style={styles.summaryText}>
-							{TotalDeaths ? TotalDeaths : ''}
-						</Text>
-
-						<Text style={styles.summaryText}>
-							{NewRecovered ? NewRecovered : ''}
-						</Text>
-
-						<Text style={styles.summaryText}>
-							{TotalRecovered ? TotalRecovered : ''}
-						</Text>
-					</View>
-				</View>
-
-				{/* <Button title="Click Me" onPress={getData} /> */}
-
+		<View style={styles.container}>
+			{covidData.Global ? (
 				<FlatList
 					data={covidData.Countries}
 					renderItem={({ item }) => (
 						<CountryCard data={item} navigation={navigation} />
 					)}
 					keyExtractor={(item) => item.Country}
+					ListHeaderComponent={
+						<>
+							<View style={styles.summary}>
+								<View style={{ flex: 1 }}>
+									<Text style={styles.summaryText}>
+										New Confirmed
+									</Text>
+
+									<Text style={styles.summaryText}>
+										Total Confirmed{' '}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										New Deaths{' '}
+									</Text>
+									<Text style={styles.summaryText}>
+										Total Deaths
+									</Text>
+									<Text style={styles.summaryText}>
+										New Recovered
+									</Text>
+									<Text style={styles.summaryText}>
+										Total Recovered{' '}
+									</Text>
+								</View>
+
+								<View style={{ flex: 1 }}>
+									<Text style={styles.summaryText}>
+										{covidData.Global.NewConfirmed
+											? covidData.Global.NewConfirmed
+											: ''}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										{covidData.Global.TotalConfirmed
+											? covidData.Global.TotalConfirmed
+											: ''}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										{covidData.Global.NewDeaths
+											? covidData.Global.NewDeaths
+											: ''}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										{covidData.Global.TotalDeaths
+											? covidData.Global.TotalDeaths
+											: ''}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										{covidData.Global.NewRecovered
+											? covidData.Global.NewRecovered
+											: ''}
+									</Text>
+
+									<Text style={styles.summaryText}>
+										{covidData.Global.TotalRecovered
+											? covidData.Global.TotalRecovered
+											: ''}
+									</Text>
+								</View>
+							</View>
+						</>
+					}
 				/>
-			</View>
-		</ScrollView>
+			) : (
+				<ActivityIndicator size="large" color="red" />
+			)}
+		</View>
 	);
 };
 
