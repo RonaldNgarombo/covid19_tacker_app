@@ -206,15 +206,18 @@ const DetailsScreen = ({ route, navigation }) => {
 							</ScrollView>
 						</View>
 
-						<Text>A graph showing COVID 19 data in {slug}</Text>
-						<Text>DISCLAIMER</Text>
+						<Text style={styles.infoText}>
+							A Bezier Curve showing COVID 19 cases {slug}
+						</Text>
 
-						<Text>
+						<Text style={styles.disclaimer}>DISCLAIMER</Text>
+
+						<Text style={styles.infoText}>
 							COVID 19 data keeps constantly changing and may not
 							be accurate in RealTime.
 						</Text>
 
-						<Text>
+						<Text style={styles.infoText}>
 							Secondly, all the data is not mine, but from an
 							external api
 						</Text>
@@ -239,5 +242,18 @@ const styles = StyleSheet.create({
 	container: {
 		marginLeft: 10,
 		marginRight: 10,
+	},
+
+	infoText: {
+		textAlign: 'center',
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+
+	disclaimer: {
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold',
+		color: 'red',
 	},
 });
