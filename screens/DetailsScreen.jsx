@@ -5,6 +5,7 @@ import {
 	View,
 	Alert,
 	FlatList,
+	ActivityIndicator,
 	Dimensions,
 	ScrollView,
 } from 'react-native';
@@ -18,10 +19,16 @@ import { mainStyles } from '../mainStyles';
 
 import CaseCard from '../components/CaseCard';
 
-const DetailsScreen = ({ route }) => {
+const DetailsScreen = ({ route, navigation }) => {
 	const slug = route.params.slug;
+	const country = route.params.country;
 
-	const [countryData, setCountryData] = useState([
+	// navigation.setOptions({ title: 'Updated!' })
+	navigation.setOptions({ title: country });
+
+	const [countryData, setCountryData] = useState([]);
+
+	const DATA = [
 		{
 			Country: 'Uganda',
 			CountryCode: 'UG',
@@ -118,7 +125,7 @@ const DetailsScreen = ({ route }) => {
 			Status: 'confirmed',
 			Date: '2020-03-23T00:00:00Z',
 		},
-	]);
+	];
 
 	let numberOfCases = [];
 	let dateOfCases = [];
@@ -128,12 +135,13 @@ const DetailsScreen = ({ route }) => {
 		dateOfCases.push(moment(data.Date).format(`MMM D`));
 	});
 
-	console.log(dateOfCases);
+	// console.log(dateOfCases);
 
 	const URL = `https://api.covid19api.com/dayone/country/${slug}/status/confirmed`;
 
 	useEffect(() => {
-		// getData();
+		// const abortController = new AbortController
+		getData();
 	}, []);
 
 	// console.log(countryData.reverse());
@@ -141,7 +149,8 @@ const DetailsScreen = ({ route }) => {
 	const getData = async () => {
 		try {
 			const response = await axios.get(URL);
-			console.log(response.data);
+			// console.log(response.data);
+			setCountryData(response.data);
 		} catch (error) {
 			Alert.alert('An Error Occurred', error);
 		}
@@ -150,61 +159,69 @@ const DetailsScreen = ({ route }) => {
 	return (
 		<View style={{ backgroundColor: 'white', flex: 1 }}>
 			<View style={styles.container}>
-				<View>
-					<ScrollView horizontal={true}>
-						<LineChart
-							data={{
-								labels: dateOfCases,
-								datasets: [
-									{
-										data: numberOfCases,
-									},
-								],
-							}}
-							width={Dimensions.get('window').width} // from react-native
-							height={400}
-							yAxisLabel="cases "
-							yAxisSuffix=""
-							yAxisInterval={1} // optional, defaults to 1
-							chartConfig={{
-								backgroundColor: '#e26a00',
-								backgroundGradientFrom: mainStyles.COLOR_TWO,
-								backgroundGradientTo: mainStyles.COLOR_TWO,
-								decimalPlaces: 0, // optional, defaults to 2dp
-								color: (opacity = 1) =>
-									`rgba(255, 255, 255, ${opacity})`,
-								labelColor: (opacity = 1) =>
-									`rgba(255, 255, 255, ${opacity})`,
-								style: {
-									borderRadius: 16,
-								},
-								propsForDots: {
-									r: '4',
-									strokeWidth: '2',
-									stroke: 'white',
-								},
-							}}
-							bezier
-							style={{
-								marginVertical: 8,
-								borderRadius: 10,
-							}}
-						/>
-					</ScrollView>
-				</View>
+				{countryData.length > 0 ? (
+					<>
+						<View>
+							<ScrollView horizontal={true}>
+								<LineChart
+									data={{
+										labels: dateOfCases,
+										datasets: [
+											{
+												data: numberOfCases,
+											},
+										],
+									}}
+									width={Dimensions.get('window').width} // from react-native
+									height={400}
+									yAxisLabel="cases "
+									yAxisSuffix=""
+									yAxisInterval={1} // optional, defaults to 1
+									chartConfig={{
+										backgroundColor: '#e26a00',
+										backgroundGradientFrom:
+											mainStyles.COLOR_TWO,
+										backgroundGradientTo:
+											mainStyles.COLOR_TWO,
+										decimalPlaces: 0, // optional, defaults to 2dp
+										color: (opacity = 1) =>
+											`rgba(255, 255, 255, ${opacity})`,
+										labelColor: (opacity = 1) =>
+											`rgba(255, 255, 255, ${opacity})`,
+										style: {
+											borderRadius: 16,
+										},
+										propsForDots: {
+											r: '4',
+											strokeWidth: '2',
+											stroke: 'white',
+										},
+									}}
+									bezier
+									style={{
+										marginVertical: 8,
+										borderRadius: 10,
+									}}
+								/>
+							</ScrollView>
+						</View>
 
-				<Text>A graph showing COVID 19 data in {slug}</Text>
-				<Text>DISCLAIMER</Text>
+						<Text>A graph showing COVID 19 data in {slug}</Text>
+						<Text>DISCLAIMER</Text>
 
-				<Text>
-					COVID 19 data keeps constantly changing and may not be
-					accurate in RealTime.
-				</Text>
+						<Text>
+							COVID 19 data keeps constantly changing and may not
+							be accurate in RealTime.
+						</Text>
 
-				<Text>
-					Secondly, all the data is not mine, but from and external
-					api
-				</Text>
+						<Text>
+							Secondly, all the data is not mine, but from an
+							external api
+						</Text>
+					</>
+				) : (
+					<ActivityIndicator size="large" color="red" />
+				)}
 
 				{/* <FlatList
 					data={countryData.reverse()}
