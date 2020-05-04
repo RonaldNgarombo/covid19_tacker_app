@@ -22,7 +22,12 @@ export default function CountryCard({ data, navigation }) {
 	return (
 		<View style={styles.container}>
 			<TouchableOpacity
-				onPress={() => navigation.navigate('Details', { slug: Slug })}
+				onPress={() =>
+					navigation.navigate('Details', {
+						slug: Slug,
+						country: Country,
+					})
+				}
 			>
 				<View style={styles.country}>
 					<View style={{ flex: 1 }}>
